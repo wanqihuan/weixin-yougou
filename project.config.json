@@ -1,0 +1,65 @@
+{
+	"description": "项目配置文件。",
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true,
+		"autoAudits": false
+	},
+	"miniprogramRoot": "dist/wx/",
+	"compileType": "miniprogram",
+	"appid": "wx14a487c5ea89b688",
+	"projectname": "myshop",
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"currentL": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": 3,
+			"list": [
+				{
+					"id": -1,
+					"name": "分类页",
+					"pathName": "pages/category/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "购物车页",
+					"pathName": "pages/cart/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "购物车页",
+					"pathName": "pages/index/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "首页",
+					"pathName": "pages/index/main",
+					"scene": null
+				}
+			]
+		}
+	}
+}
