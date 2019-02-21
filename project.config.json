@@ -30,7 +30,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 3,
+			"current": 4,
 			"list": [
 				{
 					"id": -1,
@@ -57,6 +57,13 @@
 					"id": -1,
 					"name": "首页",
 					"pathName": "pages/index/main",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "搜素",
+					"pathName": "pages/search/main",
 					"scene": null
 				}
 			]

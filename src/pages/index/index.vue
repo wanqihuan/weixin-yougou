@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import card from "@/components/card";
+// import card from "@/components/card";
 import search from "@/components/search"
 import request from "@/utils/request";
 export default {
@@ -102,11 +102,8 @@ export default {
         // console.log(this.floordata);
       }
     );
-
-    // console.log(request);
   },
   components: {
-    card,
     search
   },
   methods: {},
