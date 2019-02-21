@@ -21,7 +21,7 @@ export default {
   mounted () {
     // onLoad: function (options) {
     // console.log('onLoad')
-  }
+
   },
 
   methods: {
