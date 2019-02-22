@@ -52,7 +52,7 @@ export default {
   mounted() {
     request("https://www.zhengzhicheng.cn/api/public/v1/categories").then(
       res => {
-        console.log(res);
+        // console.log(res);
         this.categoriesData = res.data.message;
         this.categoriesList = res.data.message[0].children;
       }
@@ -61,15 +61,19 @@ export default {
   methods: {
     // 点击根据索引切换数据
     handlertoggle(index) {
-      this.categoriesList = this.categoriesData[index].children;
       // 切换left菜单栏样式
-      this.num = index;
+        this.num = index;
+        // 右侧数据渲染从头开始渲染
+      this.categoriesList=[]
+      setTimeout(()=>{
+        this.categoriesList = this.categoriesData[index].children;
+      },0)
     },
-    // 点击跳转到搜素页面
+    // 点击跳转到搜素页面并把关键字传过去
     handlerSearch(name){
-    console.log(name);
+    // console.log(name);
     wx.navigateTo({
-        url:"../search/main?name="+name+""
+        url:"../search/main?key="+name+""
       });
     }
   }
@@ -116,6 +120,7 @@ export default {
       padding: 20rpx;
       height: 100%;
       box-sizing: border-box;
+
       .main_right_title {
         padding: 20rpx 0;
         text-align: center;

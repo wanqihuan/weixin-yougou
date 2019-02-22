@@ -12,9 +12,10 @@ export default {
   },
   methods: {
     handlerSearch() {
-      wx.navigateTo({
-        url:"../search/main"
-      });
+      console.log("搜素");
+      // wx.navigateTo({
+      //   url:"../search/main"
+      // });
     }
   }
 };

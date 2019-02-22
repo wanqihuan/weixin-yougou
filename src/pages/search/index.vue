@@ -1,23 +1,18 @@
 <template>
   <view>
     <view class="search">
-      <view class="search-input">
-        <icon type="search" size="32rpx" class="search-icon"></icon>
-        {{query}}
-      </view>
+      <input class="search-input" :value="query" type="text" focus>
+      <icon type="search" size="32rpx" class="search-icon"></icon>
     </view>
     <view class="search_nav">
-      <view class="{active:isActive1}">综合</view>
-      <view class>销量</view>
-      <view class>价格</view>
+      <block v-for="(item,index) in navs" :key="index">
+        <view :class="{active:num==index}" @tap="toggle(index)">{{item}}</view>
+      </block>
     </view>
     <block v-for="(item,index) in goods" :key="index">
       <view class="goods_list">
         <view class="goods_list_left">
-          <img
-            :src="item.goods_small_logo"
-            alt
-          >
+          <img :src="item.goods_small_logo" alt>
         </view>
         <view class="goods_list_right">
           <view class="goods_name">{{item.goods_name}}</view>
@@ -38,7 +33,9 @@ import request from "@/utils/request";
 export default {
   data() {
     return {
-      isActive: false,
+      navs: ["综合", "销量", "价格"],
+      num: 0,
+      // isActive: false,
       query: "",
       pagenum: 1,
       pagesize: "",
@@ -62,11 +59,16 @@ export default {
   },
   // 获取传过来的参数
   onLoad: function(options) {
-    console.log(options);
-    this.query = options.name;
+    // console.log(options);
+    this.query = options.key;
     console.log(this.query);
   },
-  methods: {},
+  methods: {
+    // 点击时切换nav样式
+    toggle(index) {
+      this.num = index;
+    }
+  },
 
   created() {
     // let app = getApp()
@@ -78,15 +80,18 @@ export default {
 .search {
   padding: 20rpx 16rpx;
   background-color: #eee;
+  position: relative;
   .search-input {
-    padding-left: 30rpx;
+    padding-left: 60rpx;
     height: 60rpx;
     background-color: #fff;
-    font-size: 26rpx;
-    color: #bbb;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    border: 1rpx solid #ccc;
+    font-size: 30rpx;
+  }
+  .search-icon {
+    position: absolute;
+    top: 37rpx;
+    left: 30rpx;
   }
 }
 .search_nav {
@@ -95,7 +100,7 @@ export default {
   height: 100rpx;
   justify-content: space-around;
   align-items: center;
-  font-size: 26rpx;
+  font-size: 32rpx;
   .active {
     color: red;
   }
