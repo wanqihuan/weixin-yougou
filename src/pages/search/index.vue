@@ -1,7 +1,7 @@
 <template>
   <view>
     <view class="search">
-      <input class="search-input" v-model="query" type="text" focus v-on:input="inputFunc()">
+      <input class="search-input" v-model="query" type="text" focus v-on:input="inputFunc">
       <icon type="search" size="32rpx" class="search-icon"></icon>
     </view>
     <view class="search_nav">
@@ -18,7 +18,7 @@
           <view class="goods_name">{{item.goods_name}}</view>
           <view class="goods_price">
             <span>￥</span>
-            <span>{{item.goods_price}}</span>.
+            <span>{{item.goods_price}}.</span>
             <span>00</span>
           </view>
         </view>
@@ -47,18 +47,10 @@ export default {
     // card
   },
   mounted() {
-    request(
-      "https://www.zhengzhicheng.cn/api/public/v1/goods/search?query=" +
-        this.query +
-        ""
-    ).then(res => {
-      // console.log(res);
-      this.goods = res.data.message.goods;
-    });
+    this.initData();
   },
   // 获取传过来的参数
   onLoad: function(options) {
-    // console.log(options);
     this.query = options.key;
     // console.log(this.query);
   },
@@ -67,17 +59,24 @@ export default {
     toggle(index) {
       this.num = index;
     },
+    // 封装请求数据函数
+    initData() {
+      request(
+        "https://www.zhengzhicheng.cn/api/public/v1/goods/search?query=" +
+          this.query +
+          ""
+      ).then(res => {
+        // 数据渲染从头开始渲染
+        // 防止数据过多在中间时从新渲染数据显示中间用户体验不好
+        this.goods=[]
+        setTimeout(()=>{
+          this.goods = res.data.message.goods;
+        },0)
+      });
+    },
     // 根据input中的值查询数据
     inputFunc() {
-        request(
-          "https://www.zhengzhicheng.cn/api/public/v1/goods/search?query=" +
-            this.query +
-            ""
-        ).then(res => {
-          // console.log(res);
-          this.goods = res.data.message.goods;
-        });
-
+      this.initData();
     }
   },
 
@@ -91,7 +90,9 @@ export default {
 .search {
   padding: 20rpx 16rpx;
   background-color: #eee;
-  position: relative;
+  position: fixed;
+  box-sizing: border-box;
+  width: 100%;
   .search-input {
     padding-left: 60rpx;
     height: 60rpx;
