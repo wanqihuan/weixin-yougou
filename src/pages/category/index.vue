@@ -68,9 +68,9 @@ export default {
     // 点击跳转到搜素页面
     handlerSearch(name){
     console.log(name);
-    // wx.navigateTo({
-    //     url:"../search/main?name=name"
-    //   });
+    wx.navigateTo({
+        url:"../search/main?name="+name+""
+      });
     }
   }
 };
