@@ -14,6 +14,7 @@
         <view class="collect">收藏</view>
       </view>
       <view class="express">快递:　免运费 </view>
+      <text v-html="goods_introduce" class="goods_introduce"></text>
     </view>
     <view class="footer">
       <view class="footer_left">
@@ -38,6 +39,7 @@ export default {
       goods_id: 0,
       price:'',
       name:'',
+      goods_introduce:'',
       imgUrls:[]
     };
   },
@@ -59,6 +61,7 @@ export default {
        this.imgUrls=goodsData.pics
        this.price=goodsData.goods_price
        this.name=goodsData.goods_name
+       this.goods_introduce=goodsData.goods_introduce
     });
   },
   created() {
@@ -110,7 +113,7 @@ export default {
        }
      }
      .express{
-       padding: 2rpx 0;
+       padding: 10rpx 0;
        color: #ccc;
        font-size: 34rpx;
      }
@@ -120,6 +123,7 @@ export default {
        height: 100rpx;
        display: flex;
        position: fixed;
+       background-color: #fff;
        width: 100%;
        bottom: 0;
        left: 0;
