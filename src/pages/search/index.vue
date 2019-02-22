@@ -24,6 +24,7 @@
         </view>
       </view>
     </block>
+    <view class="loading" v-show="hasMore==false">已全部加载完......</view>
   </view>
 </template>
 <script>
@@ -38,8 +39,9 @@ export default {
       // isActive: false,
       query: "",
       pagenum: 1,
-      pagesize: "",
-      goods: []
+      pagesize: 20,
+      goods: [],
+      hasMore:true
     };
   },
 
@@ -47,6 +49,9 @@ export default {
     // card
   },
   mounted() {
+    this.pagenum = 1,
+    this.pagesize = 20,
+    this.goods = [];
     this.initData();
   },
   // 获取传过来的参数
@@ -61,23 +66,54 @@ export default {
     },
     // 封装请求数据函数
     initData() {
+      // if(!this.hasMore){
+      //   return;
+      // }
+      // 加载提示
+      wx.showLoading({
+        title: "加载中"
+      });
       request(
-        "https://www.zhengzhicheng.cn/api/public/v1/goods/search?query=" +
-          this.query +
-          ""
+        "https://www.zhengzhicheng.cn/api/public/v1/goods/search",
+        "GET",
+        {
+          query: this.query,
+          pagenum: this.pagenum,
+          pagesize: this.pagesize
+        }
       ).then(res => {
-        // 数据渲染从头开始渲染
-        // 防止数据过多在中间时从新渲染数据显示中间用户体验不好
-        this.goods=[]
-        setTimeout(()=>{
-          this.goods = res.data.message.goods;
-        },0)
+        let { goods } = res.data.message;
+        this.pagenum += 1;
+        this.goods = [...this.goods, ...goods];
+        // 数据完成后隐藏
+        wx.hideLoading();
+        // 数据加载完上拉刷新隐藏
+         wx.stopPullDownRefresh()
+        //上拉拉全部加载完时显示提示
+        if(goods.length<this.pagesize){
+            this.hasMore=false
+        }
+
       });
     },
     // 根据input中的值查询数据
     inputFunc() {
+      this.pagenum = 1,
+      this.pagesize = 20,
+      this.goods = [];
       this.initData();
     }
+  },
+  // 上拉加载更多数据
+  onReachBottom() {
+    this.initData();
+  },
+  //下拉刷新
+  onPullDownRefresh(){
+     this.pagenum = 1,
+     this.pagesize = 20,
+     this.goods = [];
+     this.initData();
   },
 
   created() {
@@ -154,5 +190,12 @@ export default {
       }
     }
   }
+}
+.loading {
+  line-height: 80rpx;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 30rpx;
+  background-color: #f4f4f4;
 }
 </style>

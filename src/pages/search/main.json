@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "搜素"
+  "navigationBarTitleText": "搜素",
+  "enablePullDownRefresh":true,
+  "backgroundTextStyle":"dark",
+  "backgroundColor":"pink"
 }
