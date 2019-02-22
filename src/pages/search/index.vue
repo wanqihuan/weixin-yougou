@@ -41,7 +41,7 @@ export default {
       pagenum: 1,
       pagesize: 20,
       goods: [],
-      hasMore:true
+      hasMore: true
     };
   },
 
@@ -49,6 +49,7 @@ export default {
     // card
   },
   mounted() {
+    this.hasMore=true
     this.pagenum = 1,
     this.pagesize = 20,
     this.goods = [];
@@ -66,9 +67,10 @@ export default {
     },
     // 封装请求数据函数
     initData() {
-      // if(!this.hasMore){
-      //   return;
-      // }
+      // 如果为false停止请求
+      if(!this.hasMore){
+        return;
+      }
       // 加载提示
       wx.showLoading({
         title: "加载中"
@@ -85,19 +87,19 @@ export default {
         let { goods } = res.data.message;
         this.pagenum += 1;
         this.goods = [...this.goods, ...goods];
-        // 数据完成后隐藏
+        // 数据完成后加载提示隐藏
         wx.hideLoading();
         // 数据加载完上拉刷新隐藏
-         wx.stopPullDownRefresh()
+        wx.stopPullDownRefresh();
+        if (goods.length < this.pagesize) {
         //上拉拉全部加载完时显示提示
-        if(goods.length<this.pagesize){
-            this.hasMore=false
+          this.hasMore = false;
         }
-
       });
     },
     // 根据input中的值查询数据
     inputFunc() {
+       this.hasMore=true
       this.pagenum = 1,
       this.pagesize = 20,
       this.goods = [];
@@ -109,11 +111,9 @@ export default {
     this.initData();
   },
   //下拉刷新
-  onPullDownRefresh(){
-     this.pagenum = 1,
-     this.pagesize = 20,
-     this.goods = [];
-     this.initData();
+  onPullDownRefresh() {
+    (this.pagenum = 1), (this.pagesize = 20), (this.goods = []);
+    this.initData();
   },
 
   created() {

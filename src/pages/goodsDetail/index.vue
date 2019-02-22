@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import card from '@/components/card'
+// import card from '@/components/card'
 
 export default {
   data () {
@@ -15,7 +15,7 @@ export default {
   },
 
   components: {
-    card
+    // card
   },
 
   methods: {
