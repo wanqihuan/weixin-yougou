@@ -1,7 +1,7 @@
 <template>
   <view>
     <view class="search">
-      <input class="search-input" :value="query" type="text" focus>
+      <input class="search-input" v-model="query" type="text" focus v-on:input="inputFunc()">
       <icon type="search" size="32rpx" class="search-icon"></icon>
     </view>
     <view class="search_nav">
@@ -47,13 +47,12 @@ export default {
     // card
   },
   mounted() {
-    this.isActive = true;
     request(
-      "https://www.zhengzhicheng.cn/api/public/v1/goods/search?" +
+      "https://www.zhengzhicheng.cn/api/public/v1/goods/search?query=" +
         this.query +
         ""
     ).then(res => {
-      console.log(res);
+      // console.log(res);
       this.goods = res.data.message.goods;
     });
   },
@@ -61,12 +60,24 @@ export default {
   onLoad: function(options) {
     // console.log(options);
     this.query = options.key;
-    console.log(this.query);
+    // console.log(this.query);
   },
   methods: {
     // 点击时切换nav样式
     toggle(index) {
       this.num = index;
+    },
+    // 根据input中的值查询数据
+    inputFunc() {
+        request(
+          "https://www.zhengzhicheng.cn/api/public/v1/goods/search?query=" +
+            this.query +
+            ""
+        ).then(res => {
+          // console.log(res);
+          this.goods = res.data.message.goods;
+        });
+
     }
   },
 
