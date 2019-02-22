@@ -10,7 +10,7 @@
       </block>
     </view>
     <block v-for="(item,index) in goods" :key="index">
-      <view class="goods_list">
+      <view class="goods_list" @tap="goTodetail(item.goods_id)">
         <view class="goods_list_left">
           <img :src="item.goods_small_logo" alt>
         </view>
@@ -104,6 +104,13 @@ export default {
       this.pagesize = 20,
       this.goods = [];
       this.initData();
+    },
+    // 跳转到详情页
+    goTodetail(id){
+      // console.log(id);
+      wx.navigateTo({
+         url: "/pages/goodsDetail/main?goods_id="+id+""
+      })
     }
   },
   // 上拉加载更多数据
@@ -112,7 +119,10 @@ export default {
   },
   //下拉刷新
   onPullDownRefresh() {
-    (this.pagenum = 1), (this.pagesize = 20), (this.goods = []);
+     this.hasMore=true
+     this.pagenum = 1,
+     this.pagesize = 20,
+     this.goods = [];
     this.initData();
   },
 

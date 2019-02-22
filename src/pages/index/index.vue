@@ -60,26 +60,6 @@ export default {
     };
   },
   mounted() {
-    // let that = this;
-    //  wx.request({
-    //   url: 'https://itjustfun.cn/api/public/v1/home/swiperdata',
-    //   success(res){
-    //     // console.log(res)
-    //     // 这是因为this作用域指向问题 ，success函数实际是一个闭包 ， 无法直接通过this来imgUrl
-    //     that.imgUrl=res.data.data
-    //   }
-    //   }),
-    //   // 导航栏
-    //   wx.request({
-    //     url:'https://itjustfun.cn/api/public/v1/home/catitems',
-    //     // 箭头函数
-    //     success:(res)=>{
-    //       console.log(res);
-    //       this.menus=res.data.data
-    //       console.log(this.menus);
-    //     }
-
-    //   })
     // 轮播图
     request("https://www.zhengzhicheng.cn/api/public/v1/home/swiperdata").then(
       res => {
