@@ -63,7 +63,6 @@ export default {
   components: {
     // card
   },
-
   methods: {
     // 大图预览
     getBigImg(url){
@@ -79,7 +78,10 @@ export default {
     }
   },
   onLoad: function(query) {
-    console.log(query);
+    // 加载数据提示
+     wx.showLoading({
+       title: "加载中"
+      });
     // 获取参数
     this.goods_id = query.goods_id;
     // 获取商品详情数据
@@ -91,6 +93,8 @@ export default {
        this.price=goodsData.goods_price
        this.name=goodsData.goods_name
        this.goods_introduce=goodsData.goods_introduce
+        // 数据完成后加载提示隐藏
+        wx.hideLoading();
     });
   },
   created() {
