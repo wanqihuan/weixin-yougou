@@ -20,7 +20,7 @@
           </div>
           <ul class="main_right_list">
             <li v-for="(subItem,subIndex) in item.children" :key="subIndex" @tap="handlerSearch(subItem.cat_name)">
-              <img :src="subItem.cat_icon" alt>
+              <img :src="'https://autumnfish.cn/wx/'+subItem.cat_icon" alt>
               <p>{{subItem.cat_name}}</p>
             </li>
           </ul>
@@ -78,7 +78,7 @@ export default {
     handlerSearch(name){
     // console.log(name);
     wx.navigateTo({
-        url:"/pages/goodsList/main?key="+name+""
+        url:"/pages/goodsList/main?key="+name
       });
     }
   }

@@ -10,7 +10,7 @@
               class="weui-search-bar__input"
               placeholder="搜索"
               v-model="inputVal"
-              :focus="inputShowed"
+              confirm-type="done"
               @input="inputTyping"
               @confirm="confirmInput"
             >
@@ -85,6 +85,12 @@ export default {
     // 跳转到详情页
     goToDetail(id){
      wx.navigateTo({ url: "/pages/goodsDetail/main?goods_id="+id});
+    },
+    // 跳到列表页
+    goToList(name){
+       wx.navigateTo({
+        url:"/pages/goodsList/main?key="+name
+      });
     },
     // 清空历史数据
     clearHistory(){
@@ -195,8 +201,6 @@ export default {
  top: 10rpx;
 }
 }
-
-
 }
 </style>
 

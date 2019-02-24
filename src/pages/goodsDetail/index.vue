@@ -11,23 +11,33 @@
       <view class="price">￥{{price}}</view>
       <view class="name">
         <view class="goods_name">{{name}}</view>
-        <view class="collect">收藏</view>
+        <view class="collect">
+          <span class="iconfont icon-shoucang"></span>
+        收藏</view>
       </view>
       <view class="express">快递:　免运费 </view>
       <view>
           <view>商品详情</view>
-          <rich-text type="node" :nodes="goods_introduce" class="goods_introduce"></rich-text>
+          <view class="detail_content">
+             <rich-text type="node" :nodes="goods_introduce" class="goods_introduce"></rich-text>
+          </view>
+
       </view>
 
       <!-- <rich-text v-html="" class="goods_introduce"></text> -->
     </view>
     <view class="footer">
       <view class="footer_left">
-        <view>联系客服</view>
-        <view>购物车</view>
+        <view class="service">
+          <span class="iconfont icon-kefu"></span>
+        客服
+        </view>
+        <view class="cart">
+        <span class="iconfont icon-gouwuche"></span>
+        购物车</view>
       </view>
       <view class="footer_right">
-         <view class="cart">加入购物车</view>
+         <view class="add_cart">加入购物车</view>
          <view class="buy">立即购买</view>
        </view>
     </view>
@@ -123,8 +133,9 @@ export default {
        .collect{
          width: 200rpx;
          display: flex;
-       justify-content: center;
-       align-items: center;
+         flex-direction: column;
+          align-items: center;
+          justify-content: space-around;
          font-size: 30rpx;
          color: #ccc;
          border-left: 1px solid #f4f4f4;
@@ -136,6 +147,10 @@ export default {
        font-size: 34rpx;
      }
 
+  }
+  // 解决图片空隙
+  .detail_content{
+    font-size: 0;
   }
     .footer{
        height: 100rpx;
@@ -151,13 +166,19 @@ export default {
         display: flex;
         justify-content: space-around;
         align-items: center;
+        .service,.cart{
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: space-around;
+        }
        }
        .footer_right{
          font-size: 36rpx;
          color: #fff;
          flex: 3;
          display: flex;
-         .cart{
+         .add_cart{
            flex: 1;
            text-align: center;
            line-height: 100rpx;
