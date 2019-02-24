@@ -29,8 +29,9 @@
     <view class="footer">
       <view class="footer_left">
         <view class="service">
+        <button open-type="contact" class="btn">客服</button>
           <span class="iconfont icon-kefu"></span>
-        客服
+            客服
         </view>
         <view class="cart">
         <span class="iconfont icon-gouwuche"></span>
@@ -166,6 +167,11 @@ export default {
         display: flex;
         justify-content: space-around;
         align-items: center;
+        position: relative;
+        .btn{
+          position: absolute;
+          opacity: 0;
+        }
         .service,.cart{
           display: flex;
           flex-direction: column;
