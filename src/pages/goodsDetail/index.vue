@@ -3,7 +3,7 @@
     <swiper indicator-dots autoplay circular class="swiper">
       <block v-for="(item,index) in imgUrls" :key="index">
         <swiper-item>
-          <image :src="item.pics_big_url" class="slide-image"></image>
+          <image :src="item.pics_big_url" class="slide-image" @tap="getBigImg(item.pics_big_url)"></image>
         </swiper-item>
       </block>
     </swiper>
@@ -14,7 +14,12 @@
         <view class="collect">收藏</view>
       </view>
       <view class="express">快递:　免运费 </view>
-      <text v-html="goods_introduce" class="goods_introduce"></text>
+      <view>
+          <view>商品详情</view>
+          <rich-text type="node" :nodes="goods_introduce" class="goods_introduce"></rich-text>
+      </view>
+
+      <!-- <rich-text v-html="" class="goods_introduce"></text> -->
     </view>
     <view class="footer">
       <view class="footer_left">
@@ -48,14 +53,27 @@ export default {
     // card
   },
 
-  methods: {},
+  methods: {
+    // 大图预览
+    getBigImg(url){
+      let urls=[]
+      this.imgUrls.forEach(e => {
+       urls.push(e.pics_big_url)
+      });
+      console.log(urls);
+      wx.previewImage({
+       current: url, // 当前显示图片的http链接
+       urls:urls // 需要预览的图片http链接列表
+})
+    }
+  },
   onLoad: function(query) {
     console.log(query);
     // 获取参数
     this.goods_id = query.goods_id;
     // 获取商品详情数据
     request.get("goods/detail", { goods_id: this.goods_id }).then(res => {
-      console.log(res);
+      // console.log(res);
        let goodsData=res.data.message
        console.log(goodsData);
        this.imgUrls=goodsData.pics

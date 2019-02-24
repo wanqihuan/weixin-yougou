@@ -1,89 +1,131 @@
 <template>
-  <view>
-    <view class="search">
-      <input class="search-input" v-model="query" type="text" focus v-on:input="inputFunc">
-      <icon type="search" size="32rpx" class="search-icon"></icon>
-    </view>
-    <view class="search_nav">
-      <block v-for="(item,index) in navs" :key="index">
-        <view :class="{active:num==index}" @tap="toggle(index)">{{item}}</view>
-      </block>
-    </view>
-    <block v-for="(item,index) in goods" :key="index">
-      <view class="goods_list" @tap="goTodetail(item.goods_id)">
-        <view class="goods_list_left">
-          <img :src="item.goods_small_logo" alt>
-        </view>
-        <view class="goods_list_right">
-          <view class="goods_name">{{item.goods_name}}</view>
-          <view class="goods_price">
-            <span>￥</span>
-            <span>{{item.goods_price}}.</span>
-            <span>00</span>
+  <view class="serach">
+    <div class="page__bd">
+      <div class="weui-search-bar">
+        <div class="weui-search-bar__form">
+          <div class="weui-search-bar__box">
+            <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
+            <input
+              type="text"
+              class="weui-search-bar__input"
+              placeholder="搜索"
+              v-model="inputVal"
+              :focus="inputShowed"
+              @input="inputTyping"
+              @confirm="confirmInput"
+            >
+            <div class="weui-icon-clear" v-if="inputVal.length > 0" @tap="clearInput">
+              <icon type="clear" size="14"></icon>
+            </div>
+          </div>
+          <label class="weui-search-bar__label" :hidden="inputShowed" @tap="showInput">
+            <icon class="weui-icon-search" type="search" size="14"></icon>
+            <div class="weui-search-bar__text">搜索</div>
+          </label>
+        </div>
+        <div class="weui-search-bar__cancel-btn" :hidden="!inputShowed" @tap="hideInput">取消</div>
+      </div>
+      <scroll-view class="weui-cells searchbar-result" v-if="inputVal.length > 0">
+        <block v-for="(item,index) in goods" :key="index">
+          <view url class="weui-cell" hover-class="weui-cell_active" @tap="goToDetail(item.goods_id)">
+            <view class="weui-cell__bd">
+              <view>{{item.goods_name}}</view>
+            </view>
           </view>
+        </block>
+      </scroll-view>
+      <!-- 搜素历史数据 -->
+      <view class="history-wrapper" v-show="history.length > 0" :hidden="inputShowed">
+        <view class="history-title">历史搜索
+          <icon @tap="clearHistory" type="clear" size="14" class="clear"></icon>
+        </view>
+        <view class="history-list">
+          <block v-for="(item,index) in history" :key="index">
+            <view class="history-item" @tap="goToList(item)">{{ item }}</view>
+          </block>
         </view>
       </view>
-    </block>
-    <view class="loading" v-show="hasMore==false">已全部加载完......</view>
+    </div>
   </view>
 </template>
 <script>
 // import card from '@/components/card'
-import request from "@/utils/request";
+import { getSearchData } from "@/api";
 
 export default {
   data() {
     return {
-      navs: ["综合", "销量", "价格"],
-      num: 0,
-      // isActive: false,
-      query: "",
+      goods: [],
       pagenum: 1,
       pagesize: 20,
-      goods: [],
-      hasMore: true
+      inputShowed: false,
+      inputVal: "",
+      history: []
     };
   },
 
   components: {
     // card
   },
-  mounted() {
-    this.hasMore=true
-    this.pagenum = 1,
-    this.pagesize = 20,
-    this.goods = [];
-    this.initData();
-  },
-  // 获取传过来的参数
-  onLoad: function(options) {
-    this.query = options.key;
-    // console.log(this.query);
+  onShow() {
+    //  显示是获取搜素历史数据
+    this.history = wx.getStorageSync("history") || [];
   },
   methods: {
-    // 点击时切换nav样式
-    toggle(index) {
-      this.num = index;
+    showInput() {
+      this.inputShowed = true;
+    },
+    hideInput() {
+      this.inputVal = "";
+      this.inputShowed = false;
+    },
+    clearInput() {
+      this.inputVal = "";
+    },
+    // 跳转到详情页
+    goToDetail(id){
+     wx.navigateTo({ url: "/pages/goodsDetail/main?goods_id="+id});
+    },
+    // 清空历史数据
+    clearHistory(){
+      this.history = [];
+      wx.removeStorageSync('history');
+      this.inputShowed=true
+    },
+    // 手机端完成触发
+    // 按下回车键触发
+    confirmInput() {
+      // console.log(11);
+      //把输入框搜素数据先储存起来
+      this.history.unshift(this.inputVal);
+      //  数组去重
+      this.history = [...new Set(this.history)];
+      wx.setStorageSync("history", this.history);
+    },
+    // 输入框搜素
+    inputTyping(e) {
+      // console.log(e);
+      this.inputVal = e.mp.detail.value;
+      this.hasMore = true;
+      (this.pagenum = 1), (this.pagesize = 20), (this.goods = []);
+      this.initData();
     },
     // 封装请求数据函数
     initData() {
       // 如果为false停止请求
-      if(!this.hasMore){
+      if (!this.hasMore) {
         return;
       }
       // 加载提示
       wx.showLoading({
         title: "加载中"
       });
-      request(
-        "https://www.zhengzhicheng.cn/api/public/v1/goods/search",
-        "GET",
-        {
-          query: this.query,
-          pagenum: this.pagenum,
-          pagesize: this.pagesize
-        }
-      ).then(res => {
+      getSearchData({
+        query: this.inputVal,
+        pagenum: this.pagenum,
+        pagesize: this.pagesize
+      }).then(res => {
+        // let { goods } = res.data.data;
         let { goods } = res.data.message;
         this.pagenum += 1;
         this.goods = [...this.goods, ...goods];
@@ -92,25 +134,10 @@ export default {
         // 数据加载完上拉刷新隐藏
         wx.stopPullDownRefresh();
         if (goods.length < this.pagesize) {
-        //上拉拉全部加载完时显示提示
+          //上拉拉全部加载完时显示提示
           this.hasMore = false;
         }
       });
-    },
-    // 根据input中的值查询数据
-    inputFunc() {
-       this.hasMore=true
-      this.pagenum = 1,
-      this.pagesize = 20,
-      this.goods = [];
-      this.initData();
-    },
-    // 跳转到详情页
-    goTodetail(id){
-      // console.log(id);
-      wx.navigateTo({
-         url: "/pages/goodsDetail/main?goods_id="+id+""
-      })
     }
   },
   // 上拉加载更多数据
@@ -119,93 +146,57 @@ export default {
   },
   //下拉刷新
   onPullDownRefresh() {
-     this.hasMore=true
-     this.pagenum = 1,
-     this.pagesize = 20,
-     this.goods = [];
+    this.hasMore = true;
+    (this.pagenum = 1), (this.pagesize = 20), (this.goods = []);
     this.initData();
   },
-
   created() {
-    // let app = getApp()
+    //  let app = getApp()
   }
 };
 </script>
-
 <style lang="scss" scoped>
-.search {
-  padding: 20rpx 16rpx;
-  background-color: #eee;
+.weui-search-bar {
   position: fixed;
-  box-sizing: border-box;
   width: 100%;
-  .search-input {
-    padding-left: 60rpx;
-    height: 60rpx;
-    background-color: #fff;
-    border: 1rpx solid #ccc;
-    font-size: 30rpx;
-  }
-  .search-icon {
-    position: absolute;
-    top: 37rpx;
-    left: 30rpx;
-  }
+  z-index: 2;
 }
-.search_nav {
-  display: flex;
-  border-bottom: 1px solid #ccc;
-  height: 100rpx;
-  justify-content: space-around;
-  align-items: center;
-  font-size: 32rpx;
-  .active {
-    color: red;
-  }
+.searchbar-result {
+  padding-top: 100rpx;
+  margin-top: 0;
+  font-size: 14px;
 }
-.goods_list {
+.searchbar-result:before {
+  display: none;
+}
+.weui-cell {
+  padding: 12px 15px 12px 35px;
+}
+.history-wrapper{
+   padding: 100rpx 10rpx 0 10rpx;
+.history-list{
   display: flex;
-  padding: 20rpx;
-  border-bottom: 1rpx solid #ccc;
-  .goods_list_left {
-    width: 250rpx;
-    height: 200rpx;
+  flex: wrap;
+  .history-item{
+     width: 100rpx;
+     height: 80rpx;
     display: flex;
     justify-content: center;
-    img {
-      width: 200rpx;
-      height: 200rpx;
-    }
-  }
-  .goods_list_right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    .goods_name {
-      font-size: 32rpx;
-      line-height: 44rpx;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-    }
-    .goods_price {
-      color: red;
-      span {
-        &:nth-of-type(odd) {
-          font-size: 24rpx;
-        }
-      }
-    }
-  }
+    align-items: center;
+     background-color: #ccc;
+     margin: 10rpx;
+   }
 }
-.loading {
-  line-height: 80rpx;
-  text-align: center;
-  padding: 20rpx 0;
-  font-size: 30rpx;
-  background-color: #f4f4f4;
+.history-title{
+  position: relative;
+  .clear{
+ position: absolute;
+ right: 20rpx;
+ top: 10rpx;
+}
+}
+
+
 }
 </style>
+

@@ -48,6 +48,7 @@
 
 <script>
 // import card from "@/components/card";
+import {getSwiper,getCat,getFloor} from "@/api"
 import search from "@/components/search"
 import request from "@/utils/request";
 export default {
@@ -61,25 +62,31 @@ export default {
   },
   mounted() {
     // 轮播图
-    request("https://www.zhengzhicheng.cn/api/public/v1/home/swiperdata").then(
+   getSwiper()
+    .then(
       res => {
         // console.log(res);
-        this.imgUrl = res.data.message;
+        this.imgUrl = res.data.message
+        // this.imgUrl = res.data.data;
       }
     );
     //菜单导航栏
-    request("https://www.zhengzhicheng.cn/api/public/v1/home/catitems").then(
+     getCat()
+    .then(
       res => {
         // console.log(res);
         this.menus = res.data.message;
+        // this.menus = res.data.data
       }
     );
     // 楼层数据
-    request("https://www.zhengzhicheng.cn/api/public/v1/home/floordata").then(
+    getFloor()
+    .then(
       res => {
         console.log(res);
         this.floordata = res.data.message;
-        // console.log(this.floordata);
+        // this.floordata = res.data.data
+        console.log(this.floordata);
       }
     );
   },

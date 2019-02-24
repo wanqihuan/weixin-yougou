@@ -34,6 +34,7 @@
 // import card from "@/components/card";
 import search from "@/components/search";
 import request from "@/utils/request";
+import {getCategory} from "@/api"
 
 export default {
   data() {
@@ -50,11 +51,15 @@ export default {
   search
   },
   mounted() {
-    request("https://www.zhengzhicheng.cn/api/public/v1/categories").then(
+    // request("https://www.zhengzhicheng.cn/api/public/v1/categories")
+    getCategory()
+    .then(
       res => {
         // console.log(res);
         this.categoriesData = res.data.message;
+        // this.categoriesData = res.data.data
         this.categoriesList = res.data.message[0].children;
+        // this.categoriesList = res.data.data[0].children;
       }
     );
   },
@@ -73,7 +78,7 @@ export default {
     handlerSearch(name){
     // console.log(name);
     wx.navigateTo({
-        url:"../search/main?key="+name+""
+        url:"/pages/goodsList/main?key="+name+""
       });
     }
   }
