@@ -13,6 +13,50 @@
       </block>
       <view class="address-border"></view>
     </view>
+    <!-- 商品列表 -->
+    <view class="list_title">优购生活馆</view>
+    <div class="ware-list">
+      <block v-for="(item,index) in cartList" :key="index">
+        <div class="ware-item" @tap="goToDetail(item.goods_id)">
+          <!-- 选择按钮 -->
+          <div class="choice-button" @tap.stop="chooseGoods(index)">
+            <view class="iconfont icon-xuanze" :class="{'icon-xuanze-fill':item.selected}"></view>
+          </div>
+          <!-- 内容主体 -->
+          <div class="ware-content">
+            <!-- 主体左图片 -->
+            <div class="ware-image">
+              <img :src="item.goods_small_logo" alt>
+            </div>
+            <!-- 主体右信息 -->
+            <div class="ware-info">
+              <view class="goods_name">{{item.goods_name}}</view>
+              <div class="ware-info-btm">
+                <!-- 价格 -->
+                <div class="ware-price">￥{{item.goods_price}}</div>
+                <!-- 计数器 -->
+                <div class="calculate">
+                  <div class="rect" @tap.stop="calculateHandle(index, -1)">-</div>
+                  <div class="number">{{ item.count }}</div>
+                  <div class="rect" @tap.stop="calculateHandle(index, 1)">+</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </block>
+    </div>
+    <!-- 结算 -->
+    <div class="cart-total">
+      <div class="total-button" @tap="choiceAll(allCount == cartLength)">
+        <view class="iconfont icon-xuanze" :class="{ 'icon-xuanze-fill' : allCount == cartLength }" ></view>全选
+      </div>
+      <div class="total-center">
+        <div class="colorRed">合计:￥{{allPrices }}</div>
+        <div class="price-tips">包邮</div>
+      </div>
+      <div class="accounts" @tap="accountsHandle">结算({{allCount}})</div>
+    </div>
   </div>
 </template>
 
@@ -26,34 +70,111 @@ export default {
         userName: "",
         telNumber: "",
         address: ""
-      }
+      },
+      cartList: {},
+      cartLength: 0,
+      allCount: 0
     };
   },
 
-  components: {
-    card
-  },
-  onLoad(){
+  components: {},
+  onLoad() {
     // 获取用户地址
-   this.address= wx.getStorageSync('address')||{};
-   console.log(this.address);
+    this.address = wx.getStorageSync("address") || {};
+    // console.log(this.address);
+  },
+  onShow() {
+    // 获取用户加入购物车的数据列表
+    this.cartList = wx.getStorageSync("cartList") || {};
+    console.log(this.cartList);
+  },
+  computed: {
+    // 计算总数和总价
+    allPrices() {
+      let allPrices = 0;
+      let allCount = 0;
+      let cartList = this.cartList;
+      for (const key in cartList) {
+        if (cartList[key].selected == true) {
+          allPrices += cartList[key].goods_price * cartList[key].count;
+          allCount++;
+        }
+      }
+      // Object.keys(this.cartList) 转换为key数组 应用数组length属性
+      // 根据length来判断是否全选
+      this.cartLength = Object.keys(this.cartList).length;
+      this.allCount = allCount;
+      return allPrices;
+    }
   },
   methods: {
+    // 获取用户地址
     chooseAddress() {
-      // 获取用户地址
       wx.chooseAddress({
         success: res => {
           this.address = {
             userName: res.userName,
             telNumber: res.telNumber,
             address: `${res.provinceName}${res.cityName}${res.countyName}${
-              res.detailInfo }`
-
+              res.detailInfo
+            }`
           };
           // 存储用户地址到本地
-          wx.setStorageSync('address',this.address)
+          wx.setStorageSync("address", this.address);
         }
       });
+    },
+    // 返回详情页
+    goToDetail(id) {
+      // console.log(id);
+      wx.navigateTo({ url: "/pages/goodsDetail/main?goods_id=" + id });
+    },
+    // 商品选择按钮
+    chooseGoods(index) {
+      // console.log(index);
+      this.cartList[index].selected = !this.cartList[index].selected;
+    },
+    // 点击全选
+    choiceAll(boolean){
+    //  把选中的状态取反
+      for (const key in this.cartList) {
+       this.cartList[key].selected=!boolean
+      }
+    },
+    accountsHandle(){
+      // 如果本地没有 token ，那就跳转到授权页面，发起请求换取 token
+      if(!wx.getStorageSync('token')){
+        // 跳转到授权页面
+        wx.navigateTo({ url: '/pages/auth/main' });
+      }else{
+        wx.navigateTo({ url: '/pages/pay/main' });
+      }
+    },
+    // 点击加减
+    calculateHandle(index, num) {
+      console.log(index, num);
+      this.cartList[index].count += num;
+      // console.log(this.cartList[index].count);
+      if (this.cartList[index].count == 0) {
+        wx.showModal({
+          title: "提示",
+          content: "是否删除商品",
+          confirmText:'删除',
+          confirmColor:'#f86c37',
+          success:(res)=> {
+            if (res.confirm) {
+              //  点击删除时删除列表
+              delete this.cartList[index];
+             console.log(this.cartList);
+              // 把对象转成字符串，在转会对象，处理成一个全新的对象，再赋值给 this.cartList
+              this.cartList = JSON.parse(JSON.stringify(this.cartList));
+            } else if (res.cancel) {
+              // 点击取消时数量从新赋值为1
+              this.cartList[index].count = 1;
+            }
+          }
+        });
+      }
     }
   },
 
@@ -172,7 +293,13 @@ export default {
   flex-direction: column;
   justify-content: space-between;
 }
-
+.goods_name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
 .ware-info-btm {
   display: flex;
   justify-content: space-between;
@@ -209,7 +336,10 @@ export default {
   background: #fff;
 
   .total-button {
-    padding-left: 20px;
+    // padding-left: 20px;
+    display: flex;
+    justify-content: center;
+    flex: 1;
     icon {
       margin-right: 10px;
     }

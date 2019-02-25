@@ -116,7 +116,7 @@ export default {
     goTodetail(id){
       // console.log(id);
       wx.navigateTo({
-         url: "/pages/goodsDetail/main?goods_id="+id+""
+         url: "/pages/goodsDetail/main?goods_id="+id
       })
     }
   },

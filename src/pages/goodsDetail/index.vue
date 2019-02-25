@@ -33,12 +33,13 @@
           <span class="iconfont icon-kefu"></span>
             客服
         </view>
-        <view class="cart">
+      <view class="cart" @tap="goToCart">
         <span class="iconfont icon-gouwuche"></span>
-        购物车</view>
+        购物车
+      </view>
       </view>
       <view class="footer_right">
-         <view class="add_cart">加入购物车</view>
+         <view class="add_cart" @tap="addToCartList(goods_id)">加入购物车</view>
          <view class="buy">立即购买</view>
        </view>
     </view>
@@ -56,7 +57,8 @@ export default {
       price:'',
       name:'',
       goods_introduce:'',
-      imgUrls:[]
+      imgUrls:[],
+      goodsData:{}
     };
   },
 
@@ -74,7 +76,45 @@ export default {
       wx.previewImage({
        current: url, // 当前显示图片的http链接
        urls:urls // 需要预览的图片http链接列表
-})
+      })
+    },
+    goToCart(){
+    // 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
+    wx.switchTab({
+      url: '/pages/cart/main'
+     })
+    },
+    // 点击加入购物车
+     addToCartList(id){
+      //  console.log(id);
+      // 防止数据还没加载到，就直接返回，不运行加入购物车的逻辑
+      if(!id) return;
+      // 点击按钮的时候，重新获取本地的购物车数据
+      let cartList = wx.getStorageSync('cartList') || {};
+      // 购物车商品选中状态
+      this.goodsData.selected = true;
+      // 购物车中的商品数量
+      this.goodsData.count = 1;
+      console.log(this.goodsData.count);
+      // 把商品信息存到本地
+      cartList[id] = this.goodsData;
+      wx.setStorageSync('cartList',cartList);
+       // 把当前商品详情数据，添加到本地存储中是有条件
+      // 条件1：如果本地存储中没有改商品，直接添加
+      // 条件2：如果本地存储中已经存在过该商品，该数量应该是相加
+      if(!cartList[id]){
+         cartList[id]=this.goodsData;
+      }else{
+        cartList[id].count+=this.goodsData.count
+      }
+      // 把修改过的数据重新设置到本地存储
+      wx.setStorageSync('cartList',cartList);
+      // 成功之后的提示
+      wx.showToast({
+        title: '成功',
+        icon: 'success',
+       duration: 2000
+      })
     }
   },
   onLoad: function(query) {
@@ -87,12 +127,12 @@ export default {
     // 获取商品详情数据
     request.get("goods/detail", { goods_id: this.goods_id }).then(res => {
       // console.log(res);
-       let goodsData=res.data.message
-       console.log(goodsData);
-       this.imgUrls=goodsData.pics
-       this.price=goodsData.goods_price
-       this.name=goodsData.goods_name
-       this.goods_introduce=goodsData.goods_introduce
+        this.goodsData=res.data.message
+       console.log(this.goodsData);
+       this.imgUrls=this.goodsData.pics
+       this.price=this.goodsData.goods_price
+       this.name=this.goodsData.goods_name
+       this.goods_introduce=this.goodsData.goods_introduce
         // 数据完成后加载提示隐藏
         wx.hideLoading();
     });

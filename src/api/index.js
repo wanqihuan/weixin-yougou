@@ -11,4 +11,6 @@ export const getCategory = () => request.get("categories")
 export const getGoodsList = (obj) => request.get("goods/search", obj)
 //搜素页
 export const getSearchData = (obj) => request.get('goods/search', obj)
+// 根据微信用户信息换取 token 的登录接口
+export const getToken = (obj) => request.post("users/wxlogin", obj)
 
