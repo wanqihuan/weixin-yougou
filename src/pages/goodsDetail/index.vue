@@ -21,10 +21,7 @@
           <view class="detail_content">
              <rich-text type="node" :nodes="goods_introduce" class="goods_introduce"></rich-text>
           </view>
-
       </view>
-
-      <!-- <rich-text v-html="" class="goods_introduce"></text> -->
     </view>
     <view class="footer">
       <view class="footer_left">
@@ -63,7 +60,6 @@ export default {
   },
 
   components: {
-    // card
   },
   methods: {
     // 大图预览
@@ -88,17 +84,13 @@ export default {
      addToCartList(id){
       //  console.log(id);
       // 防止数据还没加载到，就直接返回，不运行加入购物车的逻辑
-      if(!id) return;
+      if(!id)   return;
       // 点击按钮的时候，重新获取本地的购物车数据
       let cartList = wx.getStorageSync('cartList') || {};
       // 购物车商品选中状态
       this.goodsData.selected = true;
       // 购物车中的商品数量
       this.goodsData.count = 1;
-      console.log(this.goodsData.count);
-      // 把商品信息存到本地
-      cartList[id] = this.goodsData;
-      wx.setStorageSync('cartList',cartList);
        // 把当前商品详情数据，添加到本地存储中是有条件
       // 条件1：如果本地存储中没有改商品，直接添加
       // 条件2：如果本地存储中已经存在过该商品，该数量应该是相加
@@ -113,7 +105,8 @@ export default {
       wx.showToast({
         title: '成功',
         icon: 'success',
-       duration: 2000
+       duration: 1000,
+        mask: true,
       })
     }
   },

@@ -23,7 +23,7 @@ request.get = function (url, data) {
 request.post = function (url, data) {
   return request(request.baseURL + url, "POST", data);
 };
-request.auth = function (url, data) {
+request.auth = function (url, data,header) {
   return request(request.baseURL + url, "POST", data,header);
 };
 // 导出request

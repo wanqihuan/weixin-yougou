@@ -19,14 +19,16 @@ export default {
 
   methods: {
     bindGetUserInfo(e) {
-      // console.log(e.mp.detail);
+      console.log(e.mp.detail);
       // 在微信小程序中，要获取用户信息需要 e.mp 获取
       const { encryptedData, iv, rawData, signature } = e.mp.detail;
       wx.login({
         success(res) {
+          // 获取login接口的code数据
           if (res.code) {
-            // 发起网络请求
             const { code } = res;
+            // console.log(code);
+            // 按要求准备发送data数据
             getToken({
               encryptedData,
               iv,
@@ -36,7 +38,6 @@ export default {
             }).then(res=>{
               console.log(res);
             })
-
           } else {
             console.log("登录失败！" + res.errMsg);
           }
