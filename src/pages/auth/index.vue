@@ -27,7 +27,7 @@ export default {
           // 获取login接口的code数据
           if (res.code) {
             const { code } = res;
-            // console.log(code);
+            console.log("code");
             // 按要求准备发送data数据
             getToken({
               encryptedData,
@@ -37,6 +37,7 @@ export default {
               code
             }).then(res=>{
               console.log(res);
+             wx.setStorageSync('token',res.data.message.token);
             })
           } else {
             console.log("登录失败！" + res.errMsg);

@@ -31,6 +31,6 @@ export default {
 </script>
 
 <style>
-@import "../dist/wx/static/style/iconfont.css";
-@import "../dist/wx/static/style/weui.css";
+@import "../dist/wx/static/style/iconfont.wxss";
+@import "../dist/wx/static/style/weui.wxss";
 </style>

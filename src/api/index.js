@@ -13,4 +13,9 @@ export const getGoodsList = (obj) => request.get("goods/search", obj)
 export const getSearchData = (obj) => request.get('goods/search', obj)
 // 根据微信用户信息换取 token 的登录接口
 export const getToken = (obj) => request.post("users/wxlogin", obj)
+// 以下接口需要 登录后才能访问
+export const orderCreate = obj => request.auth("my/orders/create", obj);
+export const orderPay = obj => request.auth("orders/req_unifiedorder", obj);
+export const orderCheck = obj => request.auth("my/orders/chkOrder", obj);
+export const orderAll = obj => request.auth.get("my/orders/all", obj);
 

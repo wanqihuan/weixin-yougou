@@ -18,10 +18,6 @@
     <div class="ware-list">
       <block v-for="(item,index) in cartList" :key="index">
         <div class="ware-item" @tap="goToDetail(item.goods_id)">
-          <!-- 选择按钮 -->
-          <div class="choice-button" @tap.stop="chooseGoods(index)">
-            <view class="iconfont icon-xuanze" :class="{'icon-xuanze-fill':item.selected}"></view>
-          </div>
           <!-- 内容主体 -->
           <div class="ware-content">
             <!-- 主体左图片 -->
@@ -36,9 +32,7 @@
                 <div class="ware-price">￥{{item.goods_price}}</div>
                 <!-- 计数器 -->
                 <div class="calculate">
-                  <div class="rect" @tap.stop="calculateHandle(index, -1)">-</div>
-                  <div class="number">{{ item.count }}</div>
-                  <div class="rect" @tap.stop="calculateHandle(index, 1)">+</div>
+                  <div class="number">X{{ item.count }}</div>
                 </div>
               </div>
             </div>
@@ -46,21 +40,16 @@
         </div>
       </block>
     </div>
-    <!-- 结算 -->
-    <div class="cart-total">
-      <div class="total-button" @tap="choiceAll(allCount == cartLength)">
-        <view class="iconfont icon-xuanze" :class="{ 'icon-xuanze-fill' : allCount == cartLength }" ></view>全选
-      </div>
-      <div class="total-center">
-        <div class="colorRed">合计:￥{{allPrices }}</div>
-      </div>
-      <div class="accounts" @tap="accountsHandle">结算({{allCount}})</div>
-    </div>
+    <!-- 支付按钮 -->
+    <view class="footer">
+      <view class="allPrices">总价:￥{{allPrices}}</view>
+      <view class="payBut" @tap="payOrder">支付订单</view>
+    </view>
   </div>
 </template>
 
 <script>
-import {orderCreate} from "@/api";
+import { orderPay } from "@/api";
 export default {
   data() {
     return {
@@ -70,15 +59,15 @@ export default {
         address: ""
       },
       cartList: {},
-      cartLength: 0,
-      allCount: 0
+      order_number: ""
     };
   },
 
   components: {},
-  onLoad() {
+  onLoad(query) {
     // 获取用户地址
     this.address = wx.getStorageSync("address") || {};
+    this.order_number = query.order_number;
     // console.log(this.address);
   },
   onShow() {
@@ -127,68 +116,25 @@ export default {
       // console.log(id);
       wx.navigateTo({ url: "/pages/goodsDetail/main?goods_id=" + id });
     },
-    // 商品选择按钮
-    chooseGoods(index) {
-      // console.log(index);
-      this.cartList[index].selected = !this.cartList[index].selected;
-    },
-    // 点击全选
-    choiceAll(boolean){
-    //  把选中的状态取反
-      for (const key in this.cartList) {
-       this.cartList[key].selected=!boolean
-      }
-    },
-    // 结算
-    accountsHandle(){
-      // 创建订单列表
-       let data={
-         order_price:this.allPrices,
-         consignee_addr:this.address.address,
-         goods:[]
-       }
-       for (let key in this.cartList) {
-         if (this.cartList[key].selected) {
-            data.goods.push({
-            "goods_id": this.cartList[key].goods_id,
-            "goods_number": this.cartList[key].count,
-            "goods_price": this.cartList[key].goods_price
-            })
-         }
-       }
-      //  创建订单
-       orderCreate(data)
-       .then(res=>{
-       const { order_number } = res.data.message;
-        wx.navigateTo({url:"/pages/pay/main?order_number="+order_number})
-       })
-
-    },
-    // 点击加减
-    calculateHandle(index, num) {
-      console.log(index, num);
-      this.cartList[index].count += num;
-      // console.log(this.cartList[index].count);
-      if (this.cartList[index].count == 0) {
-        wx.showModal({
-          title: "提示",
-          content: "是否删除商品",
-          confirmText:'删除',
-          confirmColor:'#f86c37',
-          success:(res)=> {
-            if (res.confirm) {
-              //  点击删除时删除列表
-              delete this.cartList[index];
-             console.log(this.cartList);
-              // 把对象转成字符串，在转会对象，处理成一个全新的对象，再赋值给 this.cartList
-              this.cartList = JSON.parse(JSON.stringify(this.cartList));
-            } else if (res.cancel) {
-              // 点击取消时数量从新赋值为1
-              this.cartList[index].count = 1;
-            }
+    // 点击支付
+    payOrder() {
+      orderPay({ order_number: this.order_number }).then(res => {
+        // console.log(res);
+        wx.requestPayment({
+          signType: "MD5",
+          timeStamp: "1525681145",
+          nonceStr: "BkPggorBXZwPGXe3",
+          package: "prepay_id=wx071619042918087bb4c1d3d72999385683",
+          signType: "MD5",
+          paySign: "D1642DEEF1663C8012EDEB9297E1D516",
+          success(res) {
+            console.log("支付成功");
+          },
+          fail(res) {
+            console.log("支付失败");
           }
         });
-      }
+      });
     }
   },
 
@@ -326,60 +272,28 @@ export default {
 .calculate {
   display: flex;
 }
-
-.rect {
-  width: 20px;
-  text-align: center;
-  border: 1px #999 solid;
-  line-height: 1.2;
-}
-
-.number {
-  margin: 0 10px;
-}
-
-.cart-total {
+.footer {
   position: fixed;
+  width: 100%;
   bottom: 0;
   left: 0;
-  width: 100%;
   height: 100rpx;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  background: #fff;
-
-  .total-button {
-    // padding-left: 20px;
+  .allPrices {
     display: flex;
     justify-content: center;
-    flex: 1;
-    icon {
-      margin-right: 10px;
-    }
+    align-items: center;
+    color: red;
+    font-size: 46rpx;
   }
-
-  .total-center {
-    flex: 1;
-    padding: 20rpx;
-
-    .colorRed {
-      color: red;
-    }
-
-    .price-tips {
-      font-size: 14px;
-      color: #666;
-    }
-  }
-
-  .accounts {
-    width: 30%;
-    height: 100rpx;
-    background: red;
+  .payBut {
+    width: 300rpx;
     color: #fff;
-    line-height: 100rpx;
-    text-align: center;
+    align-items: center;
+    background-color: red;
+    display: flex;
+    justify-content: center;
   }
 }
 </style>
