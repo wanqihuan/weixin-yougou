@@ -35,7 +35,7 @@
       </viwe>
       <view class="line"></view>
       <viwe class="weui-panel__ft">
-        <div class="weui-cell weui-cell_access weui-cell_link">
+        <div class="weui-cell weui-cell_access weui-cell_link" @tap="getAddress">
           <div class="weui-cell__bd addr_idea">收货地址管理</div>
           <div class="weui-cell__ft weui-cell__ft_in-access"></div>
         </div>
@@ -63,10 +63,6 @@ export default {
     return {};
   },
   onLoad: function(query) {
-wx.setTabBarBadge({
-      index: 2,
-      text: "2"
-    });
   },
 
   components: { },
@@ -74,6 +70,21 @@ wx.setTabBarBadge({
 
 
   methods: {
+    // 获取收货地址
+    getAddress(){
+   wx.chooseAddress({
+  success(res) {
+    console.log(res.userName)
+    console.log(res.postalCode)
+    console.log(res.provinceName)
+    console.log(res.cityName)
+    console.log(res.countyName)
+    console.log(res.detailInfo)
+    console.log(res.nationalCode)
+    console.log(res.telNumber)
+  }
+})
+    },
     callSomeOne(tel) {
       console.log(tel);
       wx.makePhoneCall({
