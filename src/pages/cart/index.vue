@@ -49,7 +49,7 @@
     <!-- 结算 -->
     <div class="cart-total">
       <div class="total-button" @tap="choiceAll(allCount == cartLength)">
-        <view class="iconfont icon-xuanze" :class="{ 'icon-xuanze-fill' : allCount == cartLength }" ></view>全选
+        <view class="iconfont icon-xuanze" :class="{ 'icon-xuanze-fill' : allCount == cartLength }"></view>全选
       </div>
       <div class="total-center">
         <div class="colorRed">合计:￥{{allPrices }}</div>
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import {orderCreate} from "@/api";
+import { orderCreate } from "@/api";
 export default {
   data() {
     return {
@@ -133,36 +133,34 @@ export default {
       this.cartList[index].selected = !this.cartList[index].selected;
     },
     // 点击全选
-    choiceAll(boolean){
-    //  把选中的状态取反
+    choiceAll(boolean) {
+      //  把选中的状态取反
       for (const key in this.cartList) {
-       this.cartList[key].selected=!boolean
+        this.cartList[key].selected = !boolean;
       }
     },
     // 结算
-    accountsHandle(){
-      // 创建订单列表
-       let data={
-         order_price:this.allPrices,
-         consignee_addr:this.address.address,
-         goods:[]
-       }
-       for (let key in this.cartList) {
-         if (this.cartList[key].selected) {
-            data.goods.push({
-            "goods_id": this.cartList[key].goods_id,
-            "goods_number": this.cartList[key].count,
-            "goods_price": this.cartList[key].goods_price
-            })
-         }
-       }
+    accountsHandle() {
+      // 获取参数
+      let data = {
+        order_price: this.allPrices,
+        consignee_addr: this.address.address,
+        goods: []
+      };
+      for (let key in this.cartList) {
+        if (this.cartList[key].selected) {
+          data.goods.push({
+            goods_id: this.cartList[key].goods_id,
+            goods_number: this.cartList[key].count,
+            goods_price: this.cartList[key].goods_price
+          });
+        }
+      }
       //  创建订单
-       orderCreate(data)
-       .then(res=>{
-       const { order_number } = res.data.message;
-        wx.navigateTo({url:"/pages/pay/main?order_number="+order_number})
-       })
-
+      orderCreate(data).then(res => {
+        const { order_number } = res.data.message;
+        wx.navigateTo({ url: "/pages/pay/main?order_number=" + order_number });
+      });
     },
     // 点击加减
     calculateHandle(index, num) {
@@ -173,13 +171,13 @@ export default {
         wx.showModal({
           title: "提示",
           content: "是否删除商品",
-          confirmText:'删除',
-          confirmColor:'#f86c37',
-          success:(res)=> {
+          confirmText: "删除",
+          confirmColor: "#f86c37",
+          success: res => {
             if (res.confirm) {
               //  点击删除时删除列表
               delete this.cartList[index];
-             console.log(this.cartList);
+              console.log(this.cartList);
               // 把对象转成字符串，在转会对象，处理成一个全新的对象，再赋值给 this.cartList
               this.cartList = JSON.parse(JSON.stringify(this.cartList));
             } else if (res.cancel) {
