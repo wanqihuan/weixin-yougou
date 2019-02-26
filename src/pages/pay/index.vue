@@ -73,7 +73,7 @@ export default {
   onShow() {
     // 获取用户加入购物车的数据列表
     this.cartList = wx.getStorageSync("cartList") || {};
-    console.log(this.cartList);
+    // console.log(this.cartList);
   },
   computed: {
     // 计算总数和总价
@@ -119,22 +119,38 @@ export default {
     // 点击支付
     payOrder() {
       orderPay({ order_number: this.order_number }).then(res => {
-              console.log(res);
+              // console.log(res);
               const {wxorder} =res.data.message
               // 支付
          wx.requestPayment({
            ...wxorder,
-          success(res) {
+          success:(res)=> {
             console.log("支付成功");
+            //  for (const key in  this.cartList) {
+            //   if (this.cartList[key].selected) {
+            //    delete this.cartList[key]
+            //   }
+            // }
+            // // 解决数据不能及时更新在页面上
+            // this.cartList=JSON.parse(JSON.stringify(this.cartList))
+            // wx.setStorageSync('cartList',this.cartList)
+
           },
-          fail(res) {
+          fail:(res)=> {
             console.log("支付失败");
+             for (const key in  this.cartList) {
+              if (this.cartList[key].selected) {
+                   delete this.cartList[key]
+              }
+            }
+            // 解决数据不能及时更新在页面上
+            this.cartList=JSON.parse(JSON.stringify(this.cartList))
+            wx.setStorageSync('cartList',this.cartList)
           }
         });
       });
     }
   },
-
   created() {
     // let app = getApp()
   }

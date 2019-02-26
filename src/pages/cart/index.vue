@@ -14,38 +14,43 @@
       <view class="address-border"></view>
     </view>
     <!-- 商品列表 -->
-    <view class="list_title">优购生活馆</view>
-    <div class="ware-list">
-      <block v-for="(item,index) in cartList" :key="index">
-        <div class="ware-item" @tap="goToDetail(item.goods_id)">
-          <!-- 选择按钮 -->
-          <div class="choice-button" @tap.stop="chooseGoods(index)">
-            <view class="iconfont icon-xuanze" :class="{'icon-xuanze-fill':item.selected}"></view>
-          </div>
-          <!-- 内容主体 -->
-          <div class="ware-content">
-            <!-- 主体左图片 -->
-            <div class="ware-image">
-              <img :src="item.goods_small_logo" alt>
+    <block v-if="cartLength==0">
+      <view class="hint">购物车为空,请添加商品</view>
+    </block>
+    <block v-else>
+      <view class="list_title">优购生活馆</view>
+      <div class="ware-list">
+        <block v-for="(item,index) in cartList" :key="index">
+          <div class="ware-item" @tap="goToDetail(item.goods_id)">
+            <!-- 选择按钮 -->
+            <div class="choice-button" @tap.stop="chooseGoods(index)">
+              <view class="iconfont icon-xuanze" :class="{'icon-xuanze-fill':item.selected}"></view>
             </div>
-            <!-- 主体右信息 -->
-            <div class="ware-info">
-              <view class="goods_name">{{item.goods_name}}</view>
-              <div class="ware-info-btm">
-                <!-- 价格 -->
-                <div class="ware-price">￥{{item.goods_price}}</div>
-                <!-- 计数器 -->
-                <div class="calculate">
-                  <div class="rect" @tap.stop="calculateHandle(index, -1)">-</div>
-                  <div class="number">{{ item.count }}</div>
-                  <div class="rect" @tap.stop="calculateHandle(index, 1)">+</div>
+            <!-- 内容主体 -->
+            <div class="ware-content">
+              <!-- 主体左图片 -->
+              <div class="ware-image">
+                <img :src="item.goods_small_logo" alt>
+              </div>
+              <!-- 主体右信息 -->
+              <div class="ware-info">
+                <view class="goods_name">{{item.goods_name}}</view>
+                <div class="ware-info-btm">
+                  <!-- 价格 -->
+                  <div class="ware-price">￥{{item.goods_price}}</div>
+                  <!-- 计数器 -->
+                  <div class="calculate">
+                    <div class="rect" @tap.stop="calculateHandle(index, -1)">-</div>
+                    <div class="number">{{ item.count }}</div>
+                    <div class="rect" @tap.stop="calculateHandle(index, 1)">+</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </block>
-    </div>
+        </block>
+      </div>
+    </block>
     <!-- 结算 -->
     <div class="cart-total">
       <div class="total-button" @tap="choiceAll(allCount == cartLength)">
@@ -379,6 +384,14 @@ export default {
     line-height: 100rpx;
     text-align: center;
   }
+}
+.hint{
+  font-size: 46rpx;
+  color: red;
+ display: flex;
+ justify-content:center;
+ align-items: center;
+
 }
 </style>
 
